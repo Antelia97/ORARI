@@ -26,30 +26,39 @@
     -webkit-text-size-adjust: 100%; }
   button { font: inherit; color: inherit; }
   .num { font-variant-numeric: tabular-nums; }
+  .kicker { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
 
   /* ---------- barra alta ---------- */
   .top { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 16px 8px;
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
     border-bottom: 1px solid var(--line); }
-  .top .kicker { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
   .top .week { font-size: 20px; font-weight: 700; line-height: 1.2; }
+  .weekbtn { cursor: pointer; }
+  .weekbtn .week::after { content: " ▾"; color: var(--muted); font-weight: 400; font-size: 16px; }
   .namebtn { border: 1px solid var(--line); background: var(--card); border-radius: 999px;
     padding: 8px 14px; font-weight: 600; white-space: nowrap; cursor: pointer; box-shadow: var(--shadow); }
   .namebtn::after { content: " ▾"; color: var(--muted); font-weight: 400; }
 
   main { padding: 12px 16px calc(84px + env(safe-area-inset-bottom)); max-width: 640px; margin: 0 auto; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 18px 4px 8px; font-weight: 600;
+    scroll-margin-top: 76px; }
+  h2:first-child { margin-top: 4px; }
+  h2.weekhead { display: flex; justify-content: space-between; align-items: baseline; margin-top: 26px; }
+  h2.weekhead b { font-size: 15px; color: var(--text); text-transform: none; letter-spacing: 0; }
+  h2.weekhead.now b { color: var(--accent); }
 
   /* ---------- lista giorni (vista personale) ---------- */
   .card { background: var(--card); border-radius: 14px; box-shadow: var(--shadow); overflow: hidden;
     border: 1px solid var(--line); }
   .day { display: grid; grid-template-columns: 56px 1fr auto; gap: 8px 12px; align-items: center;
-    padding: 12px 14px; border-top: 1px solid var(--line); position: relative; }
+    padding: 12px 14px; border-top: 1px solid var(--line); position: relative; scroll-margin-top: 76px; }
   .day:first-child { border-top: 0; }
   .day.today { background: var(--accent-soft); }
   .day.today::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--accent); }
   .day .dow { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
   .day .dom { font-size: 24px; font-weight: 700; line-height: 1.1; }
   .day.today .dow { color: var(--accent); }
+  .day.past { opacity: .55; }
   .shifts { display: flex; flex-wrap: wrap; gap: 6px; }
   .pill { display: inline-block; padding: 5px 10px; border-radius: 8px; background: var(--pill-bg); color: var(--pill-text);
     font-weight: 600; font-size: 15px; white-space: nowrap; }
@@ -64,10 +73,10 @@
   .todaytag { position: absolute; right: 14px; top: 6px; font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
     color: var(--accent); font-weight: 700; }
   .day.today .hours { padding-top: 10px; }
+  .empty { padding: 14px; color: var(--muted); font-size: 14px; }
 
   /* ---------- vista giorno ---------- */
-  .daychips { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 10px; margin: 0 -16px; padding-left: 16px; padding-right: 16px;
-    scrollbar-width: none; }
+  .daychips { display: flex; gap: 6px; overflow-x: auto; padding: 2px 16px 10px; margin: 0 -16px; scrollbar-width: none; align-items: stretch; }
   .daychips::-webkit-scrollbar { display: none; }
   .chip { flex: 0 0 auto; border: 1px solid var(--line); background: var(--card); border-radius: 12px; padding: 6px 10px;
     text-align: center; min-width: 52px; cursor: pointer; line-height: 1.15; }
@@ -77,8 +86,11 @@
   .chip.sel .d { color: inherit; opacity: .7; }
   .chip.today:not(.sel) { border-color: var(--accent); }
   .chip.today:not(.sel) .d { color: var(--accent); }
-  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 18px 4px 8px; font-weight: 600; }
-  h2:first-child { margin-top: 4px; }
+  .chip.wk { border: 0; background: none; min-width: 0; padding: 6px 2px 6px 8px; writing-mode: vertical-rl; transform: rotate(180deg);
+    font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; cursor: default; }
+  .weekchips { display: flex; gap: 6px; overflow-x: auto; padding: 2px 16px 10px; margin: 0 -16px; scrollbar-width: none; }
+  .weekchips::-webkit-scrollbar { display: none; }
+  .weekchips .chip { min-width: 0; padding: 8px 12px; font-size: 14px; font-weight: 600; }
   .person { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px;
     border-top: 1px solid var(--line); }
   .person:first-child { border-top: 0; }
@@ -89,7 +101,6 @@
   .restlist { padding: 10px 14px; display: flex; flex-wrap: wrap; gap: 6px; }
   .restlist .pill { font-size: 14px; }
   .daynote { font-size: 14px; color: var(--muted); font-style: italic; margin: 4px 4px 10px; }
-  .empty { padding: 14px; color: var(--muted); font-size: 14px; }
 
   /* ---------- vista tutti ---------- */
   .tablewrap { overflow-x: auto; border-radius: 14px; border: 1px solid var(--line); background: var(--card);
@@ -116,16 +127,23 @@
   nav button svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
   nav button.on { color: var(--accent); font-weight: 600; }
 
-  /* ---------- scelta nome ---------- */
-  .picker { max-width: 640px; margin: 0 auto; padding: 24px 16px; }
+  /* ---------- schermate di scelta ---------- */
+  .picker { max-width: 640px; margin: 0 auto; padding: 24px 16px 40px; }
   .picker h1 { font-size: 26px; margin: 8px 0 4px; }
   .picker p { color: var(--muted); margin: 0 0 18px; }
   .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .grid button { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 12px; font-size: 17px;
     font-weight: 600; cursor: pointer; box-shadow: var(--shadow); }
   .grid button:active { background: var(--accent-soft); }
+  .weeks { display: flex; flex-direction: column; gap: 10px; }
+  .weeks button { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; text-align: left;
+    cursor: pointer; box-shadow: var(--shadow); font-size: 17px; }
+  .weeks .sub { display: block; font-size: 14px; color: var(--muted); margin-top: 2px; }
+  .weeks .tag { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); font-weight: 700; margin-left: 6px; }
+  .weeks .tag.new { color: var(--rest-text); }
+  .privacy { font-size: 13px; color: var(--muted); margin: 22px 4px 10px; line-height: 1.5; }
   .linkfoot { text-align: center; font-size: 13px; color: var(--muted); margin: 26px 0 0; }
-  .linkfoot a { color: var(--muted); }
+  .linkfoot a, .linkfoot button { color: var(--muted); background: none; border: 0; text-decoration: underline; cursor: pointer; font-size: 13px; padding: 6px 8px; }
 
   /* ---------- generatore ---------- */
   .gen { max-width: 560px; margin: 0 auto; padding: 28px 16px 40px; }
@@ -141,6 +159,8 @@
   .result .card { padding: 16px; }
   .result .ok { font-weight: 700; margin-bottom: 4px; }
   .result .sub { color: var(--muted); font-size: 14px; margin-bottom: 14px; }
+  .result ul { margin: 0 0 14px; padding-left: 18px; font-size: 14px; }
+  .result li.bad { color: var(--danger); }
   .linkbox { width: 100%; font: 13px/1.4 ui-monospace, Menlo, Consolas, monospace; padding: 10px; border-radius: 10px;
     border: 1px solid var(--line); background: var(--bg); color: var(--text); resize: none; word-break: break-all; }
   .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
@@ -167,36 +187,59 @@
   var MONTHS = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
   var STORAGE_NAME = 'orari.nome';
   var STORAGE_TAB = 'orari.tab';
+  var STORAGE_WEEKS = 'orari.settimane.v2';
 
-  var state = { model: null, name: null, tab: 'me', day: 0, picking: false };
+  // weeks: [{ d, w, label, model, fromLink }] in ordine di data
+  var state = { weeks: [], name: null, tab: 'me', day: null, week: 0, picking: false, pickingWeek: false, scrollTo: null };
+
+  /* ================= utilità ================= */
 
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function store(k, v) { try { v === null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} }
   function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
-  function isoToday() {
-    var d = new Date();
-    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-  }
+  function pad2(n) { return String(n).padStart(2, '0'); }
+  function toISO(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+  function isoToday() { return toISO(new Date()); }
   function dateParts(iso) {
     var p = iso.split('-').map(Number);
     var d = new Date(p[0], p[1] - 1, p[2]);
     return { y: p[0], m: p[1], d: p[2], dow: d.getDay() };
   }
-  function weekLabel(days) {
-    var a = dateParts(days[0].d), b = dateParts(days[days.length - 1].d);
-    if (a.m === b.m) return a.d + ' – ' + b.d + ' ' + MONTHS[a.m - 1] + ' ' + a.y;
-    return a.d + ' ' + MONTHS[a.m - 1] + ' – ' + b.d + ' ' + MONTHS[b.m - 1] + ' ' + b.y;
+  function rangeLabel(a, b) {
+    a = dateParts(a); b = dateParts(b);
+    if (a.m === b.m && a.y === b.y) return a.d + ' – ' + b.d + ' ' + MONTHS[a.m - 1] + ' ' + a.y;
+    if (a.y === b.y) return a.d + ' ' + MONTHS[a.m - 1] + ' – ' + b.d + ' ' + MONTHS[b.m - 1] + ' ' + b.y;
+    return a.d + ' ' + MONTHS[a.m - 1] + ' ' + a.y + ' – ' + b.d + ' ' + MONTHS[b.m - 1] + ' ' + b.y;
   }
-  function fmtTime(t) { return t; }
-  function shortTime(t) { return t.replace(/:00$/, ''); }
-  function shiftText(sh) { return fmtTime(sh[0]) + (sh[1] ? ' – ' + fmtTime(sh[1]) : ''); }
-  function shiftShort(sh) { return shortTime(sh[0]) + (sh[1] ? '-' + shortTime(sh[1]) : ''); }
+  function weekLabel(model) { return rangeLabel(model.days[0].d, model.days[model.days.length - 1].d); }
+  function isoWeek(iso) {
+    var p = iso.split('-').map(Number);
+    var d = new Date(Date.UTC(p[0], p[1] - 1, p[2]));
+    var day = d.getUTCDay() || 7;
+    d.setUTCDate(d.getUTCDate() + 4 - day);
+    var y0 = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    return Math.ceil(((d - y0) / 86400000 + 1) / 7);
+  }
+  function ddmm(iso) { var p = iso.split('-'); return p[2] + '.' + p[1]; }
+  function weekNums(models) { return models.map(function (m) { return isoWeek(m.days[0].d); }); }
+  function weeksTitle(models) {
+    var nums = weekNums(models);
+    var first = models[0].days[0].d, last = models[models.length - 1].days[models[models.length - 1].days.length - 1].d;
+    if (models.length === 1) return 'Orari settimana ' + nums[0] + ' · ' + rangeLabel(first, last);
+    var consecutive = nums.every(function (n, i) { return i === 0 || n === nums[i - 1] + 1; });
+    return 'Orari settimane ' + (consecutive ? nums[0] + '–' + nums[nums.length - 1] : nums.join(', ')) + ' · ' + rangeLabel(first, last);
+  }
+  function weeksSlug(models) {
+    var nums = weekNums(models);
+    var first = models[0].days[0].d, last = models[models.length - 1].days[models[models.length - 1].days.length - 1].d;
+    return (models.length === 1 ? 'settimana-' + nums[0] : 'settimane-' + nums[0] + '-' + nums[nums.length - 1]) + '_' + ddmm(first) + '-' + ddmm(last);
+  }
+  function codeFromHash(h) {
+    h = h.replace(/^#/, '');
+    var i = h.lastIndexOf('/');
+    return i >= 0 ? h.slice(i + 1) : h;
+  }
   function toMin(t) { var x = String(t).split(':'); return (+x[0]) * 60 + (+x[1] || 0); }
-  function startMinutes(p, d) {
-    var sh = p.days[d].shifts[0];
-    return sh ? toMin(sh[0]) : 9999;
-  }
-  // Ore reali di un giorno, calcolate dagli orari (il foglio le calcola male: 13,00 - 10,30 = 2,70)
   function dayMinutes(pd) {
     return pd.shifts.reduce(function (acc, sh) {
       if (!sh[0] || !sh[1]) return acc;
@@ -205,7 +248,6 @@
     }, 0);
   }
   function weekMinutes(p) { return p.days.reduce(function (acc, pd) { return acc + dayMinutes(pd); }, 0); }
-  // Ore da contratto: la colonna "totale" del foglio, scritta come ore,minuti (40,00 / 37,30)
   function contractMinutes(p) {
     var m = /^(\d+)[,.](\d{1,2})$/.exec(String(p.tot || '').trim());
     if (m) return (+m[1]) * 60 + (+(m[2] + '0').slice(0, 2));
@@ -217,27 +259,79 @@
     min = Math.abs(min);
     var h = Math.floor(min / 60), m = min % 60;
     if (!h) return sign + m + ' min';
-    return sign + h + 'h' + (m ? (m < 10 ? '0' : '') + m : '');
+    return sign + h + 'h' + (m ? pad2(m) : '');
   }
-  function fmtDelta(min) {
-    if (min === 0) return 'in pari';
-    return (min > 0 ? '+' : '') + fmtDur(min);
+  function fmtDelta(min) { return min === 0 ? 'in pari' : (min > 0 ? '+' : '') + fmtDur(min); }
+  function shiftText(sh) { return sh[0] + (sh[1] ? ' – ' + sh[1] : ''); }
+  function shortTime(t) { return t.replace(/:00$/, ''); }
+  function shiftShort(sh) { return shortTime(sh[0]) + (sh[1] ? '-' + shortTime(sh[1]) : ''); }
+  function startMinutes(p, d) { var sh = p.days[d].shifts[0]; return sh ? toMin(sh[0]) : 9999; }
+  function findPerson(model, name) { return model.people.filter(function (p) { return p.name === name; })[0] || null; }
+  function allNames() {
+    var seen = {}, names = [];
+    state.weeks.forEach(function (w) { w.model.people.forEach(function (p) { if (!seen[p.name]) { seen[p.name] = 1; names.push(p.name); } }); });
+    return names;
   }
-  function findPerson(name) {
-    return state.model.people.filter(function (p) { return p.name === name; })[0] || null;
-  }
-  function todayIndex() {
+  // indice della settimana "attuale": quella con oggi, altrimenti la prima futura, altrimenti l'ultima
+  function currentWeekIndex() {
     var t = isoToday();
-    for (var i = 0; i < state.model.days.length; i++) if (state.model.days[i].d === t) return i;
-    return -1;
+    for (var i = 0; i < state.weeks.length; i++) {
+      var days = state.weeks[i].model.days;
+      if (t >= days[0].d && t <= days[days.length - 1].d) return i;
+    }
+    for (i = 0; i < state.weeks.length; i++) if (state.weeks[i].model.days[0].d > t) return i;
+    return state.weeks.length - 1;
+  }
+  function todayPos() {
+    var t = isoToday();
+    for (var wi = 0; wi < state.weeks.length; wi++) {
+      var days = state.weeks[wi].model.days;
+      for (var di = 0; di < days.length; di++) if (days[di].d === t) return { w: wi, d: di };
+    }
+    return null;
   }
 
-  /* ================= VISTE ================= */
+  /* ================= settimane ricordate sul telefono ================= */
+
+  function loadStored() {
+    try { return JSON.parse(load(STORAGE_WEEKS) || '[]'); } catch (e) { return []; }
+  }
+  function saveStored(list) { store(STORAGE_WEEKS, JSON.stringify(list)); }
+
+  // unisce le settimane del link con quelle già sul telefono; il link vince sulle vecchie copie
+  function mergeWeeks(fromLink) {
+    var stored = loadStored();
+    var byDate = {};
+    stored.forEach(function (s) {
+      try { byDate[s.d] = { d: s.d, code: s.code, model: OrariParser.decode(s.code, pako), fromLink: false }; } catch (e) {}
+    });
+    fromLink.forEach(function (m) {
+      var d = m.days[0].d;
+      byDate[d] = { d: d, code: OrariParser.encode(m, pako), model: m, fromLink: true };
+    });
+    var list = Object.keys(byDate).sort().map(function (d) { return byDate[d]; });
+    if (list.length > 40) list = list.slice(list.length - 40);
+    saveStored(list.map(function (w) { return { d: w.d, code: w.code }; }));
+    return list.map(function (w) {
+      return { d: w.d, w: isoWeek(w.d), label: weekLabel(w.model), model: w.model, fromLink: w.fromLink };
+    });
+  }
+  function forgetWeeks(keepFrom) {
+    var list = loadStored().filter(function (s) { return keepFrom && s.d >= keepFrom; });
+    saveStored(list);
+  }
+
+  /* ================= viste ================= */
 
   function renderViewer() {
-    var m = state.model;
-    if (state.picking || !state.name || !findPerson(state.name)) return renderPicker();
-    var html = '<header class="top"><div><div class="kicker">Orari negozio</div><div class="week">' + esc(weekLabel(m.days)) + '</div></div>' +
+    if (state.pickingWeek) return renderWeekPicker();
+    if (state.picking || !state.name || allNames().indexOf(state.name) < 0) return renderPicker();
+    var weeks = state.weeks, cur = state.weeks[currentWeekIndex()];
+    var head;
+    if (weeks.length === 1) head = '<div class="kicker">Orari negozio · Settimana ' + cur.w + '</div><div class="week">' + esc(cur.label) + '</div>';
+    else head = '<div class="kicker">Orari negozio · ' + weeks.length + ' settimane</div><div class="week">' +
+      esc(rangeLabel(weeks[0].model.days[0].d, weeks[weeks.length - 1].model.days[6].d)) + '</div>';
+    var html = '<header class="top"><div class="weekbtn" data-act="weeks">' + head + '</div>' +
       '<button class="namebtn" data-act="pick">' + esc(state.name) + '</button></header><main>';
     if (state.tab === 'me') html += viewMe();
     else if (state.tab === 'day') html += viewDay();
@@ -246,6 +340,11 @@
     app.innerHTML = html;
     var sel = app.querySelector('.chip.sel');
     if (sel && sel.scrollIntoView) sel.scrollIntoView({ inline: 'center', block: 'nearest' });
+    if (state.scrollTo) {
+      var target = document.getElementById(state.scrollTo);
+      state.scrollTo = null;
+      if (target) target.scrollIntoView({ block: 'start' });
+    }
   }
 
   function renderNav() {
@@ -260,50 +359,62 @@
   }
 
   function viewMe() {
-    var m = state.model, p = findPerson(state.name), ti = todayIndex();
-    var html = '<div class="card">';
-    m.days.forEach(function (day, i) {
-      var dp = dateParts(day.d), pd = p.days[i];
-      var isToday = i === ti;
-      html += '<div class="day' + (isToday ? ' today' : '') + '">' +
-        (isToday ? '<span class="todaytag">Oggi</span>' : '') +
-        '<div><div class="dow">' + DOW3[dp.dow] + '</div><div class="dom num">' + dp.d + '</div></div>' +
-        '<div class="shifts">' + (pd.shifts.length
-          ? pd.shifts.map(function (sh) { return '<span class="pill num">' + esc(shiftText(sh)) + '</span>'; }).join('')
-          : '<span class="pill rest">Riposo</span>') + '</div>' +
-        '<div class="hours num">' + (pd.shifts.length ? fmtDur(dayMinutes(pd)) : '') + '</div>';
-      var notes = [];
-      if (pd.note) notes.push(pd.note);
-      if (day.note) notes.push(day.note);
-      if (notes.length) html += '<div class="note">' + esc(notes.join(' · ')) + '</div>';
+    var t = isoToday(), html = '', cur = currentWeekIndex();
+    state.weeks.forEach(function (wk, wi) {
+      var m = wk.model, p = findPerson(m, state.name);
+      if (state.weeks.length > 1) {
+        html += '<h2 class="weekhead' + (wi === cur ? ' now' : '') + '" id="w-' + wk.d + '"><b>Settimana ' + wk.w + '</b><span>' + esc(wk.label) + '</span></h2>';
+      }
+      html += '<div class="card">';
+      if (!p) { html += '<div class="empty">Non sei in elenco in questa settimana.</div></div>'; return; }
+      m.days.forEach(function (day, i) {
+        var dp = dateParts(day.d), pd = p.days[i];
+        var isToday = day.d === t, isPast = day.d < t;
+        html += '<div class="day' + (isToday ? ' today' : '') + (isPast ? ' past' : '') + '"' + (isToday ? ' id="today"' : '') + '>' +
+          (isToday ? '<span class="todaytag">Oggi</span>' : '') +
+          '<div><div class="dow">' + DOW3[dp.dow] + '</div><div class="dom num">' + dp.d + '</div></div>' +
+          '<div class="shifts">' + (pd.shifts.length
+            ? pd.shifts.map(function (sh) { return '<span class="pill num">' + esc(shiftText(sh)) + '</span>'; }).join('')
+            : '<span class="pill rest">Riposo</span>') + '</div>' +
+          '<div class="hours num">' + (pd.shifts.length ? fmtDur(dayMinutes(pd)) : '') + '</div>';
+        var notes = [];
+        if (pd.note) notes.push(pd.note);
+        if (day.note) notes.push(day.note);
+        if (notes.length) html += '<div class="note">' + esc(notes.join(' · ')) + '</div>';
+        html += '</div>';
+      });
+      var worked = weekMinutes(p), contract = contractMinutes(p);
+      html += '<div class="tot"><span>Ore lavorate</span><span class="num"><b>' + fmtDur(worked) + '</b></span></div>';
+      if (contract !== null) {
+        var delta = worked - contract;
+        html += '<div class="tot"><span>Contratto ' + fmtDur(contract) + '</span><span class="num' + (delta ? ' delta' : '') + '">scarto <b>' + fmtDelta(delta) + '</b></span></div>';
+      }
       html += '</div>';
     });
-    var worked = weekMinutes(p), contract = contractMinutes(p);
-    html += '<div class="tot"><span>Ore lavorate</span><span class="num"><b>' + fmtDur(worked) + '</b></span></div>';
-    if (contract !== null) {
-      var delta = worked - contract;
-      html += '<div class="tot"><span>Contratto ' + fmtDur(contract) + '</span><span class="num' + (delta ? ' delta' : '') + '">scarto <b>' + fmtDelta(delta) + '</b></span></div>';
-    }
-    html += '</div>';
     return html;
   }
 
   function viewDay() {
-    var m = state.model, ti = todayIndex(), sel = state.day;
-    var html = '<div class="daychips">' + m.days.map(function (day, i) {
-      var dp = dateParts(day.d);
-      return '<button class="chip' + (i === sel ? ' sel' : '') + (i === ti ? ' today' : '') + '" data-act="day" data-i="' + i + '">' +
-        '<div class="d">' + DOW3[dp.dow] + '</div><div class="n num">' + dp.d + '</div></button>';
-    }).join('') + '</div>';
-    var day = m.days[sel], dp = dateParts(day.d);
+    var t = isoToday(), sel = state.day;
+    var html = '<div class="daychips">';
+    state.weeks.forEach(function (wk, wi) {
+      if (state.weeks.length > 1) html += '<div class="chip wk">Sett. ' + wk.w + '</div>';
+      wk.model.days.forEach(function (day, di) {
+        var dp = dateParts(day.d), isSel = sel && sel.w === wi && sel.d === di;
+        html += '<button class="chip' + (isSel ? ' sel' : '') + (day.d === t ? ' today' : '') + '" data-act="day" data-w="' + wi + '" data-d="' + di + '">' +
+          '<div class="d">' + DOW3[dp.dow] + '</div><div class="n num">' + dp.d + '</div></button>';
+      });
+    });
+    html += '</div>';
+    var m = state.weeks[sel.w].model, day = m.days[sel.d], dp = dateParts(day.d);
     if (day.note) html += '<div class="daynote">' + esc(day.note) + '</div>';
-    var working = m.people.filter(function (p) { return p.days[sel].shifts.length; })
-      .sort(function (a, b) { return startMinutes(a, sel) - startMinutes(b, sel) || a.name.localeCompare(b.name); });
-    var resting = m.people.filter(function (p) { return !p.days[sel].shifts.length; });
-    html += '<h2>' + DOW[dp.dow] + ' ' + dp.d + ' · in negozio (' + working.length + ')</h2><div class="card">';
+    var working = m.people.filter(function (p) { return p.days[sel.d].shifts.length; })
+      .sort(function (a, b) { return startMinutes(a, sel.d) - startMinutes(b, sel.d) || a.name.localeCompare(b.name); });
+    var resting = m.people.filter(function (p) { return !p.days[sel.d].shifts.length; });
+    html += '<h2>' + DOW[dp.dow] + ' ' + dp.d + ' ' + MONTHS[dp.m - 1] + ' · in negozio (' + working.length + ')</h2><div class="card">';
     if (!working.length) html += '<div class="empty">Nessuno in turno.</div>';
     working.forEach(function (p) {
-      var pd = p.days[sel];
+      var pd = p.days[sel.d];
       html += '<div class="person' + (p.name === state.name ? ' me' : '') + '"><div><div class="n">' + esc(p.name) + '</div>' +
         (pd.note ? '<div class="note">' + esc(pd.note) + '</div>' : '') + '</div>' +
         '<div class="shifts">' + pd.shifts.map(function (sh) { return '<span class="pill num">' + esc(shiftText(sh)) + '</span>'; }).join('') + '</div></div>';
@@ -311,22 +422,28 @@
     html += '</div>';
     if (resting.length) {
       html += '<h2>A riposo (' + resting.length + ')</h2><div class="card"><div class="restlist">' + resting.map(function (p) {
-        var pd = p.days[sel];
-        return '<span class="pill rest' + (p.name === state.name ? ' me' : '') + '">' + esc(p.name) + (pd.note ? ' · ' + esc(pd.note) : '') + '</span>';
+        var pd = p.days[sel.d];
+        return '<span class="pill rest">' + esc(p.name) + (pd.note ? ' · ' + esc(pd.note) : '') + '</span>';
       }).join('') + '</div></div>';
     }
     return html;
   }
 
   function viewAll() {
-    var m = state.model, ti = todayIndex();
-    var html = '<div class="tablewrap"><table><thead><tr><th></th>' + m.days.map(function (day, i) {
+    var t = isoToday(), html = '';
+    if (state.weeks.length > 1) {
+      html += '<div class="weekchips">' + state.weeks.map(function (wk, wi) {
+        return '<button class="chip' + (wi === state.week ? ' sel' : '') + '" data-act="week" data-w="' + wi + '">Sett. ' + wk.w + '</button>';
+      }).join('') + '</div>';
+    }
+    var wk = state.weeks[state.week], m = wk.model;
+    html += '<div class="tablewrap"><table><thead><tr><th>' + esc(wk.label) + '</th>' + m.days.map(function (day) {
       var dp = dateParts(day.d);
-      return '<th class="' + (i === ti ? 'today' : '') + '">' + DOW3[dp.dow] + ' <span class="num">' + dp.d + '</span></th>';
+      return '<th class="' + (day.d === t ? 'today' : '') + '">' + DOW3[dp.dow] + ' <span class="num">' + dp.d + '</span></th>';
     }).join('') + '<th>Sett.</th></tr></thead><tbody>';
     m.people.forEach(function (p) {
       html += '<tr' + (p.name === state.name ? ' class="me"' : '') + '><td>' + esc(p.name) + '</td>' + p.days.map(function (pd, i) {
-        var cls = (i === ti ? 'today' : '') + (pd.shifts.length ? '' : ' rest');
+        var cls = (m.days[i].d === t ? 'today' : '') + (pd.shifts.length ? '' : ' rest');
         var inner = pd.shifts.length ? pd.shifts.map(function (sh) { return '<span class="s num">' + esc(shiftShort(sh)) + '</span>'; }).join('') : 'R';
         if (pd.note) inner += '<span class="nt">' + esc(pd.note) + '</span>';
         return '<td class="' + cls.trim() + '">' + inner + '</td>';
@@ -342,14 +459,32 @@
   }
 
   function renderPicker() {
-    var m = state.model;
-    app.innerHTML = '<div class="picker"><div class="kicker" style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)">Orari negozio · ' + esc(weekLabel(m.days)) + '</div>' +
+    var cur = state.weeks[currentWeekIndex()];
+    app.innerHTML = '<div class="picker"><div class="kicker">Orari negozio · Settimana ' + cur.w + ' · ' + esc(cur.label) + '</div>' +
       '<h1>Chi sei?</h1><p>Tocca il tuo nome. Il telefono se lo ricorda per le prossime settimane.</p><div class="grid">' +
-      m.people.map(function (p) { return '<button data-act="choose" data-name="' + esc(p.name) + '">' + esc(p.name) + '</button>'; }).join('') +
+      allNames().map(function (n) { return '<button data-act="choose" data-name="' + esc(n) + '">' + esc(n) + '</button>'; }).join('') +
       '</div><p class="linkfoot"><a href="#" data-act="gen">Crea il link di una nuova settimana</a></p></div>';
   }
 
-  /* ================= GENERATORE ================= */
+  function renderWeekPicker() {
+    var t = isoToday(), cur = currentWeekIndex();
+    app.innerHTML = '<div class="picker"><div class="kicker">Orari negozio</div>' +
+      '<h1>Settimane</h1><p>Tocca una settimana per andarci.</p><div class="weeks">' +
+      state.weeks.map(function (w, i) {
+        var end = w.model.days[w.model.days.length - 1].d;
+        var isNow = t >= w.d && t <= end;
+        return '<button data-act="goweek" data-w="' + i + '"><b>Settimana ' + w.w + '</b>' +
+          (isNow ? '<span class="tag">in corso</span>' : (end < t ? '<span class="tag" style="color:var(--muted)">passata</span>' : '')) +
+          (w.fromLink ? '<span class="tag new">da questo link</span>' : '') +
+          '<span class="sub">' + esc(w.label) + '</span></button>';
+      }).join('') + '</div>' +
+      '<p class="privacy">Le settimane restano salvate solo su questo telefono, per ritrovarle senza cercare i vecchi messaggi. ' +
+      'Non vengono inviate da nessuna parte.</p>' +
+      '<p class="linkfoot"><button data-act="forget-past">Cancella le settimane passate</button> · <button data-act="forget-all">Cancella tutto</button></p>' +
+      '<p class="linkfoot"><a href="#" data-act="back">Chiudi</a></p></div>';
+  }
+
+  /* ================= generatore ================= */
 
   var libs = {};
   function loadScript(url) {
@@ -363,49 +498,80 @@
   }
 
   function renderGenerator(extra) {
-    app.innerHTML = '<div class="gen"><h1>Orari negozio</h1><p class="lead">Crea il link della settimana da mandare nel gruppo.</p>' +
-      '<label class="drop" id="drop"><strong>Scegli il file degli orari</strong><span>PDF o Excel (.xlsx) · tocca qui oppure trascina il file</span>' +
-      '<input type="file" id="file" accept=".pdf,.xlsx,.xlsm,.xls,application/pdf"></label>' +
+    app.innerHTML = '<div class="gen"><h1>Orari negozio</h1><p class="lead">Crea il link delle settimane da mandare nel gruppo.</p>' +
+      '<label class="drop" id="drop"><strong>Scegli i file degli orari</strong><span>PDF o Excel · anche più settimane insieme · tocca qui oppure trascina i file</span>' +
+      '<input type="file" id="file" multiple accept=".pdf,.xlsx,.xlsm,.xls,application/pdf"></label>' +
       '<div id="out">' + (extra || '') + '</div>' +
-      '<ol class="steps"><li>Scegli il PDF (o l\'Excel) della settimana.</li><li>Copia il link che compare.</li><li>Incollalo nel gruppo: chi lo apre tocca il proprio nome e vede i suoi turni.</li></ol></div>';
+      '<ol class="steps"><li>Scegli i PDF (o gli Excel) delle settimane pronte, anche tutti insieme.</li><li>Premi "Copia messaggio".</li>' +
+      '<li>Incollalo nel gruppo: chi lo apre tocca il proprio nome e vede i suoi turni.</li></ol>' +
+      '<p class="privacy">I file vengono letti qui nel browser e non vengono caricati da nessuna parte. Gli orari viaggiano solo dentro il link.</p></div>';
     var drop = document.getElementById('drop'), input = document.getElementById('file');
-    input.addEventListener('change', function () { if (input.files[0]) handleFile(input.files[0]); });
+    input.addEventListener('change', function () { if (input.files.length) handleFiles(Array.prototype.slice.call(input.files)); });
     ['dragenter', 'dragover'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('over'); }); });
     ['dragleave', 'drop'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('over'); }); });
-    drop.addEventListener('drop', function (e) { var f = e.dataTransfer.files && e.dataTransfer.files[0]; if (f) handleFile(f); });
+    drop.addEventListener('drop', function (e) {
+      var fs = e.dataTransfer.files ? Array.prototype.slice.call(e.dataTransfer.files) : [];
+      if (fs.length) handleFiles(fs);
+    });
   }
 
   function setOut(html) { document.getElementById('out').innerHTML = html; }
 
-  function handleFile(file) {
-    setOut('<div class="status">Leggo ' + esc(file.name) + '…</div>');
-    var isPdf = /\.pdf$/i.test(file.name) || file.type === 'application/pdf';
-    var p = isPdf ? parsePdfFile(file) : parseXlsxFile(file);
-    p.then(function (model) {
-      var code = OrariParser.encode(model, pako);
-      var url = location.href.split('#')[0] + '#' + code;
-      var people = model.people.length;
-      setOut('<div class="result"><div class="card"><div class="ok">✓ Settimana ' + esc(weekLabel(model.days)) + '</div>' +
-        '<div class="sub">' + people + ' persone · ' + model.days.length + ' giorni · link di ' + url.length + ' caratteri</div>' +
-        '<textarea class="linkbox" id="link" rows="4" readonly>' + esc(url) + '</textarea>' +
-        '<div class="actions"><button class="btn primary" id="copy">Copia link</button>' +
-        (navigator.share ? '<button class="btn" id="share">Condividi…</button>' : '') +
-        '<a class="btn" href="' + esc(url) + '" style="text-decoration:none">Apri anteprima</a></div>' +
-        '<div class="status" id="msg"></div></div></div>');
-      document.getElementById('copy').addEventListener('click', function () {
-        var ta = document.getElementById('link');
-        ta.select();
-        var done = function () { document.getElementById('msg').textContent = 'Link copiato. Incollalo nel gruppo.'; };
-        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, function () { document.execCommand('copy'); done(); });
-        else { document.execCommand('copy'); done(); }
+  function handleFiles(files) {
+    setOut('<div class="status">Leggo ' + files.length + ' file…</div>');
+    var jobs = files.map(function (file) {
+      var isPdf = /\.pdf$/i.test(file.name) || file.type === 'application/pdf';
+      return (isPdf ? parsePdfFile(file) : parseXlsxFile(file))
+        .then(function (model) { return { file: file.name, model: model }; },
+              function (err) { return { file: file.name, error: err.message || String(err) }; });
+    });
+    Promise.all(jobs).then(function (results) {
+      var byDate = {}, items = [];
+      results.forEach(function (r) {
+        if (r.error) { items.push('<li class="bad">' + esc(r.file) + ': ' + esc(r.error) + '</li>'); return; }
+        var d = r.model.days[0].d;
+        var dup = byDate[d];
+        byDate[d] = r.model;
+        items.push('<li>' + esc(r.file) + ' → settimana ' + isoWeek(d) + ', ' + esc(weekLabel(r.model)) + ', ' + r.model.people.length + ' persone' +
+          (dup ? ' (sostituisce un altro file della stessa settimana)' : '') + '</li>');
       });
+      var models = Object.keys(byDate).sort().map(function (d) { return byDate[d]; });
+      if (!models.length) {
+        setOut('<div class="error"><b>Non sono riuscito a leggere nessun file.</b><ul>' + items.join('') + '</ul></div>');
+        return;
+      }
+      var code = OrariParser.encodeMany(models, pako);
+      var url = location.href.split('#')[0] + '#' + weeksSlug(models) + '/' + code;
+      var title = weeksTitle(models);
+      var lines = [title];
+      if (models.length > 1) models.forEach(function (m) { lines.push('• Settimana ' + isoWeek(m.days[0].d) + ': ' + weekLabel(m)); });
+      lines.push(url);
+      var message = lines.join('\n');
+      setOut('<div class="result"><div class="card"><div class="ok">✓ ' + esc(title) + '</div>' +
+        '<div class="sub">' + models.length + (models.length === 1 ? ' settimana' : ' settimane') + ' in un solo link</div>' +
+        '<ul>' + items.join('') + '</ul>' +
+        '<textarea class="linkbox" id="link" rows="' + (5 + (models.length > 1 ? models.length : 0)) + '" readonly>' + esc(message) + '</textarea>' +
+        '<div class="actions"><button class="btn primary" id="copy">Copia messaggio</button>' +
+        '<button class="btn" id="copyurl">Copia solo il link</button>' +
+        (navigator.share ? '<button class="btn" id="share">Condividi…</button>' : '') +
+        '<a class="btn" href="' + esc(url) + '">Apri anteprima</a></div>' +
+        '<div class="status" id="msg"></div></div></div>');
+      function copyText(text, okMsg) {
+        var done = function () { document.getElementById('msg').textContent = okMsg; };
+        var fallback = function () {
+          var ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
+          try { document.execCommand('copy'); } catch (e) {}
+          document.body.removeChild(ta); done();
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback);
+        else fallback();
+      }
+      document.getElementById('copy').addEventListener('click', function () { copyText(message, 'Messaggio copiato. Incollalo nel gruppo.'); });
+      document.getElementById('copyurl').addEventListener('click', function () { copyText(url, 'Link copiato.'); });
       var sh = document.getElementById('share');
       if (sh) sh.addEventListener('click', function () {
-        navigator.share({ title: 'Orari ' + weekLabel(model.days), text: 'Orari ' + weekLabel(model.days), url: url }).catch(function () {});
+        navigator.share({ title: title, text: message }).catch(function () {});
       });
-    }).catch(function (err) {
-      console.error(err);
-      setOut('<div class="error"><b>Non sono riuscito a leggere il file.</b><br>' + esc(err.message || err) + '</div>');
     });
   }
 
@@ -439,7 +605,6 @@
       }));
     }).then(function (pages) {
       if (pages.length === 1) return OrariParser.parsePdfItems(pages[0].items);
-      // più pagine: prima prova ad affiancarle (foglio largo stampato su più pagine)
       var merged = [], offset = 0;
       pages.forEach(function (pg) {
         pg.items.forEach(function (i) { merged.push({ s: i.s, x: i.x + offset, y: i.y, w: i.w }); });
@@ -449,7 +614,6 @@
         var m = OrariParser.parsePdfItems(merged);
         if (m.days.length >= 7) return m;
       } catch (e) {}
-      // altrimenti pagine una sotto l'altra: unisci le persone
       var first = null;
       pages.forEach(function (pg) {
         try {
@@ -477,23 +641,29 @@
     });
   }
 
-  /* ================= AVVIO ================= */
+  /* ================= avvio ================= */
 
   function route() {
-    var code = location.hash.replace(/^#/, '');
-    if (!code) { state.model = null; renderGenerator(); return; }
+    var code = codeFromHash(location.hash);
+    if (!code) { state.weeks = []; document.title = 'Orari negozio'; renderGenerator(); return; }
+    var fromLink;
     try {
-      state.model = OrariParser.decode(code, pako);
+      fromLink = OrariParser.decodeMany(code, pako);
     } catch (e) {
       console.error(e);
       renderGenerator('<div class="error"><b>Il link non è valido o è incompleto.</b><br>Prova a copiarlo di nuovo per intero.</div>');
       return;
     }
+    state.weeks = mergeWeeks(fromLink);
+    document.title = weeksTitle(fromLink).replace('Orari settimana', 'Orari sett.').replace('Orari settimane', 'Orari sett.');
     state.name = load(STORAGE_NAME);
     state.tab = load(STORAGE_TAB) || 'me';
-    var ti = todayIndex();
-    state.day = ti >= 0 ? ti : 0;
+    var tp = todayPos(), cw = currentWeekIndex();
+    state.day = tp || { w: cw, d: 0 };
+    state.week = cw;
     state.picking = false;
+    state.pickingWeek = false;
+    state.scrollTo = tp ? 'today' : 'w-' + state.weeks[cw].d;
     renderViewer();
   }
 
@@ -501,10 +671,35 @@
     var el = e.target.closest('[data-act]');
     if (!el) return;
     var act = el.getAttribute('data-act');
-    if (act === 'pick') { state.picking = true; renderViewer(); }
-    else if (act === 'choose') { state.name = el.getAttribute('data-name'); store(STORAGE_NAME, state.name); state.picking = false; renderViewer(); window.scrollTo(0, 0); }
-    else if (act === 'tab') { state.tab = el.getAttribute('data-tab'); store(STORAGE_TAB, state.tab); renderViewer(); window.scrollTo(0, 0); }
-    else if (act === 'day') { state.day = +el.getAttribute('data-i'); renderViewer(); }
+    if (act === 'pick') { state.picking = true; renderViewer(); window.scrollTo(0, 0); }
+    else if (act === 'choose') {
+      state.name = el.getAttribute('data-name'); store(STORAGE_NAME, state.name); state.picking = false;
+      state.scrollTo = todayPos() ? 'today' : 'w-' + state.weeks[currentWeekIndex()].d;
+      renderViewer();
+    }
+    else if (act === 'tab') {
+      state.tab = el.getAttribute('data-tab'); store(STORAGE_TAB, state.tab);
+      if (state.tab === 'me') state.scrollTo = todayPos() ? 'today' : 'w-' + state.weeks[currentWeekIndex()].d;
+      window.scrollTo(0, 0); renderViewer();
+    }
+    else if (act === 'day') { state.day = { w: +el.getAttribute('data-w'), d: +el.getAttribute('data-d') }; renderViewer(); }
+    else if (act === 'week') { state.week = +el.getAttribute('data-w'); renderViewer(); }
+    else if (act === 'weeks') { state.pickingWeek = true; renderViewer(); window.scrollTo(0, 0); }
+    else if (act === 'back') { e.preventDefault(); state.pickingWeek = false; renderViewer(); }
+    else if (act === 'goweek') {
+      var wi = +el.getAttribute('data-w');
+      state.pickingWeek = false; state.week = wi; state.day = { w: wi, d: 0 };
+      if (state.tab === 'me') state.scrollTo = 'w-' + state.weeks[wi].d;
+      renderViewer();
+    }
+    else if (act === 'forget-past') {
+      forgetWeeks(state.weeks[currentWeekIndex()].d);
+      route();
+    }
+    else if (act === 'forget-all') {
+      forgetWeeks(null);
+      route();
+    }
     else if (act === 'gen') { e.preventDefault(); history.replaceState(null, '', location.pathname); route(); }
   });
 

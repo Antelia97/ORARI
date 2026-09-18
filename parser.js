@@ -405,12 +405,28 @@
     return expand(JSON.parse(new TextDecoder().decode(bytes)));
   }
 
+  // Più settimane in un solo link (formato v2). decodeMany accetta anche i link v1 a settimana singola.
+  function encodeMany(models, pako) {
+    var json = JSON.stringify({ v: 2, w: models.map(compact) });
+    var bytes = pako.deflateRaw(new TextEncoder().encode(json), { level: 9 });
+    return b64urlEncode(bytes);
+  }
+
+  function decodeMany(str, pako) {
+    var bytes = pako.inflateRaw(b64urlDecode(str));
+    var obj = JSON.parse(new TextDecoder().decode(bytes));
+    if (obj && obj.v === 2 && Array.isArray(obj.w)) return obj.w.map(expand);
+    return [expand(obj)];
+  }
+
   return {
     parsePdfItems: parsePdfItems,
     parseGrid: parseGrid,
     gridFromWorksheet: gridFromWorksheet,
     encode: encode,
     decode: decode,
+    encodeMany: encodeMany,
+    decodeMany: decodeMany,
     numToTime: numToTime,
     parseDate: parseDate
   };

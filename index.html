@@ -59,6 +59,8 @@
   .tot { display: flex; justify-content: space-between; padding: 12px 14px; font-size: 14px; color: var(--muted);
     border-top: 1px solid var(--line); }
   .tot b { color: var(--text); }
+  .tot .delta b { color: var(--accent); }
+  .tot + .tot { padding-top: 0; border-top: 0; margin-top: -4px; }
   .todaytag { position: absolute; right: 14px; top: 6px; font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
     color: var(--accent); font-weight: 700; }
   .day.today .hours { padding-top: 10px; }
@@ -189,11 +191,37 @@
   function shortTime(t) { return t.replace(/:00$/, ''); }
   function shiftText(sh) { return fmtTime(sh[0]) + (sh[1] ? ' – ' + fmtTime(sh[1]) : ''); }
   function shiftShort(sh) { return shortTime(sh[0]) + (sh[1] ? '-' + shortTime(sh[1]) : ''); }
+  function toMin(t) { var x = String(t).split(':'); return (+x[0]) * 60 + (+x[1] || 0); }
   function startMinutes(p, d) {
     var sh = p.days[d].shifts[0];
-    if (!sh) return 9999;
-    var x = sh[0].split(':');
-    return (+x[0]) * 60 + (+x[1] || 0);
+    return sh ? toMin(sh[0]) : 9999;
+  }
+  // Ore reali di un giorno, calcolate dagli orari (il foglio le calcola male: 13,00 - 10,30 = 2,70)
+  function dayMinutes(pd) {
+    return pd.shifts.reduce(function (acc, sh) {
+      if (!sh[0] || !sh[1]) return acc;
+      var m = toMin(sh[1]) - toMin(sh[0]);
+      return acc + (m > 0 ? m : 0);
+    }, 0);
+  }
+  function weekMinutes(p) { return p.days.reduce(function (acc, pd) { return acc + dayMinutes(pd); }, 0); }
+  // Ore da contratto: la colonna "totale" del foglio, scritta come ore,minuti (40,00 / 37,30)
+  function contractMinutes(p) {
+    var m = /^(\d+)[,.](\d{1,2})$/.exec(String(p.tot || '').trim());
+    if (m) return (+m[1]) * 60 + (+(m[2] + '0').slice(0, 2));
+    var n = parseFloat(p.tot);
+    return isNaN(n) ? null : Math.round(n * 60);
+  }
+  function fmtDur(min) {
+    var sign = min < 0 ? '−' : '';
+    min = Math.abs(min);
+    var h = Math.floor(min / 60), m = min % 60;
+    if (!h) return sign + m + ' min';
+    return sign + h + 'h' + (m ? (m < 10 ? '0' : '') + m : '');
+  }
+  function fmtDelta(min) {
+    if (min === 0) return 'in pari';
+    return (min > 0 ? '+' : '') + fmtDur(min);
   }
   function findPerson(name) {
     return state.model.people.filter(function (p) { return p.name === name; })[0] || null;
@@ -243,16 +271,18 @@
         '<div class="shifts">' + (pd.shifts.length
           ? pd.shifts.map(function (sh) { return '<span class="pill num">' + esc(shiftText(sh)) + '</span>'; }).join('')
           : '<span class="pill rest">Riposo</span>') + '</div>' +
-        '<div class="hours num">' + (pd.shifts.length && pd.h ? esc(pd.h) + ' h' : '') + '</div>';
+        '<div class="hours num">' + (pd.shifts.length ? fmtDur(dayMinutes(pd)) : '') + '</div>';
       var notes = [];
       if (pd.note) notes.push(pd.note);
       if (day.note) notes.push(day.note);
       if (notes.length) html += '<div class="note">' + esc(notes.join(' · ')) + '</div>';
       html += '</div>';
     });
-    if (p.tot) {
-      html += '<div class="tot"><span>Totale settimana</span><span class="num"><b>' + esc(p.tot) + ' h</b>' +
-        (p.delta ? ' · scarto ' + esc(p.delta) : '') + '</span></div>';
+    var worked = weekMinutes(p), contract = contractMinutes(p);
+    html += '<div class="tot"><span>Ore lavorate</span><span class="num"><b>' + fmtDur(worked) + '</b></span></div>';
+    if (contract !== null) {
+      var delta = worked - contract;
+      html += '<div class="tot"><span>Contratto ' + fmtDur(contract) + '</span><span class="num' + (delta ? ' delta' : '') + '">scarto <b>' + fmtDelta(delta) + '</b></span></div>';
     }
     html += '</div>';
     return html;
@@ -293,18 +323,21 @@
     var html = '<div class="tablewrap"><table><thead><tr><th></th>' + m.days.map(function (day, i) {
       var dp = dateParts(day.d);
       return '<th class="' + (i === ti ? 'today' : '') + '">' + DOW3[dp.dow] + ' <span class="num">' + dp.d + '</span></th>';
-    }).join('') + '</tr></thead><tbody>';
+    }).join('') + '<th>Sett.</th></tr></thead><tbody>';
     m.people.forEach(function (p) {
       html += '<tr' + (p.name === state.name ? ' class="me"' : '') + '><td>' + esc(p.name) + '</td>' + p.days.map(function (pd, i) {
         var cls = (i === ti ? 'today' : '') + (pd.shifts.length ? '' : ' rest');
         var inner = pd.shifts.length ? pd.shifts.map(function (sh) { return '<span class="s num">' + esc(shiftShort(sh)) + '</span>'; }).join('') : 'R';
         if (pd.note) inner += '<span class="nt">' + esc(pd.note) + '</span>';
         return '<td class="' + cls.trim() + '">' + inner + '</td>';
-      }).join('') + '</tr>';
+      }).join('');
+      var worked = weekMinutes(p), contract = contractMinutes(p);
+      html += '<td class="num"><span class="s">' + fmtDur(worked) + '</span>' +
+        (contract !== null ? '<span class="nt">' + esc(fmtDelta(worked - contract)) + '</span>' : '') + '</td></tr>';
     });
     html += '</tbody></table></div>';
     var notes = m.days.map(function (day) { return day.note ? DOW3[dateParts(day.d).dow] + ' ' + dateParts(day.d).d + ': ' + day.note : ''; }).filter(Boolean);
-    html += '<div class="legend">R = riposo' + (notes.length ? ' · Note: ' + esc(notes.join('; ')) : '') + '</div>';
+    html += '<div class="legend">R = riposo · Sett. = ore lavorate e scarto dal contratto, ricalcolati dagli orari' + (notes.length ? ' · Note: ' + esc(notes.join('; ')) : '') + '</div>';
     return html;
   }
 

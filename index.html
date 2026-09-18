@@ -177,7 +177,7 @@
 <div id="app"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
-<script src="parser.js"></script>
+<script src="parser.js?v=2"></script>
 <script>
 (function () {
   'use strict';
@@ -646,6 +646,14 @@
   function route() {
     var code = codeFromHash(location.hash);
     if (!code) { state.weeks = []; document.title = 'Orari negozio'; renderGenerator(); return; }
+    // copia vecchia di parser.js rimasta nella cache del browser: ricarica una volta
+    if (typeof OrariParser === 'undefined' || typeof OrariParser.decodeMany !== 'function') {
+      var tried = null;
+      try { tried = sessionStorage.getItem('orari.reload'); sessionStorage.setItem('orari.reload', '1'); } catch (e) {}
+      if (!tried) { location.reload(); return; }
+      app.innerHTML = '<div class="gen"><div class="error"><b>La pagina in memoria sul telefono è vecchia.</b><br>Chiudi questa scheda e riapri il link, oppure svuota la cache del browser.</div></div>';
+      return;
+    }
     var fromLink;
     try {
       fromLink = OrariParser.decodeMany(code, pako);
